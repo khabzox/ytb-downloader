@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { ClipboardPaste } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Download } from "lucide-react";
 import Link from "next/link";
@@ -12,14 +13,26 @@ interface FormValues {
 }
 
 export default function UrlInput() {
+
   const {
     register,
     handleSubmit,
+    setValue,
     watch,
     formState: { errors },
   } = useForm<FormValues>();
 
   const onSubmit: SubmitHandler<FormValues> = data => console.log(data);
+
+  // Paste from clipboard handler
+  const handlePasteClick = async () => {
+    try {
+      const text = await navigator.clipboard.readText();
+      setValue("url", text, { shouldValidate: true });
+    } catch (err) {
+      // Optionally handle error
+    }
+  };
 
   return (
     <div className="mx-auto mb-8 max-w-2xl">
@@ -45,12 +58,23 @@ export default function UrlInput() {
             </div>
           )}
           <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 sm:flex-row">
-            <Input
-              type="url"
-              placeholder="Paste YouTube URL here..."
-              className="bg-input border-border text-foreground h-12 flex-1 border-2 text-base"
-              {...register("url", { required: true })}
-            />
+            <div className="relative flex flex-1">
+              <Input
+                type="url"
+                placeholder="Paste YouTube URL here..."
+                className="bg-input border-border text-foreground h-12 flex-1 border-2 text-base pr-12"
+                {...register("url", { required: true })}
+              />
+              <button
+                type="button"
+                onClick={handlePasteClick}
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded hover:bg-accent transition-colors"
+                title="Paste from clipboard"
+                tabIndex={0}
+              >
+                <ClipboardPaste className="h-5 w-5 text-muted-foreground" />
+              </button>
+            </div>
             <Link href="/download" type="submit">
               <Button
                 size="lg"
