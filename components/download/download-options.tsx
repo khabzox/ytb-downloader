@@ -5,7 +5,15 @@ import { Separator } from "@/components/ui/separator";
 import { Download } from "lucide-react";
 import React from "react";
 
-export default function DownloadOptions({ options }: { options: any[] }) {
+type DownloadOption = {
+  icon: React.ElementType;
+  type: string;
+  quality: string;
+  recommended?: boolean;
+  size: string;
+};
+
+export default function DownloadOptions({ options }: { options: DownloadOption[] }) {
   return (
     <Card className="bg-card">
       <CardHeader>

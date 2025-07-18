@@ -6,7 +6,24 @@ import Link from "next/link";
 import Image from "next/image";
 import React from "react";
 
-export default function ChannelInformation({ videoData }: { videoData: any }) {
+type ChannelInfo = {
+  readonly videoData: {
+    channel: {
+      avatar: string;
+      name: string;
+      verified: boolean;
+      subscribers: string;
+      bio: string;
+      socialLinks: {
+        youtube: string;
+        twitter: string;
+        website: string;
+      };
+    };
+  };
+};
+
+export default function ChannelInformation({ videoData }: ChannelInfo) {
   return (
     <Card className="bg-card">
       <CardHeader>
