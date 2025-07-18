@@ -11,7 +11,6 @@ import {
   Clock,
   FileVideo,
   Music,
-  ArrowLeft,
   ExternalLink,
 } from "lucide-react";
 import Link from "next/link";
@@ -83,15 +82,14 @@ export default function DownloadPage() {
 
   return (
     <div
-      className="min-h-screen"
-      style={{ backgroundColor: "var(--background)", color: "var(--foreground)" }}
+      className="min-h-screen bg-background text-foreground"
     >
       <div className="container mx-auto px-4 py-8">
         <div className="grid gap-8 lg:grid-cols-3">
           {/* Main Content */}
           <div className="space-y-6 lg:col-span-2">
             {/* Video Preview */}
-            <Card style={{ backgroundColor: "var(--card)" }}>
+            <Card className="bg-card">
               <CardContent className="p-0">
                 <div className="relative">
                   <Image
@@ -105,19 +103,17 @@ export default function DownloadPage() {
                     <Play className="h-16 w-16 text-white opacity-80" />
                   </div>
                   <Badge
-                    className="absolute right-2 bottom-2"
-                    style={{ backgroundColor: "rgba(0, 0, 0, 0.8)", color: "white" }}
+                    className="absolute right-2 bottom-2 bg-black/80 text-white"
                   >
                     {videoData.duration}
                   </Badge>
                 </div>
                 <div className="p-6">
-                  <h1 className="mb-4 text-2xl font-bold" style={{ color: "var(--foreground)" }}>
+                  <h1 className="mb-4 text-2xl font-bold text-foreground">
                     {videoData.title}
                   </h1>
                   <div
-                    className="mb-4 flex flex-wrap gap-4 text-sm"
-                    style={{ color: "var(--muted-foreground)" }}
+                    className="mb-4 flex flex-wrap gap-4 text-sm text-muted-foreground"
                   >
                     <div className="flex items-center gap-1">
                       <Eye className="h-4 w-4" />
@@ -132,19 +128,18 @@ export default function DownloadPage() {
                       <span>{new Date(videoData.uploadDate).toLocaleDateString()}</span>
                     </div>
                   </div>
-                  <p style={{ color: "var(--muted-foreground)" }}>{videoData.description}</p>
+                  <p className="text-muted-foreground">{videoData.description}</p>
                 </div>
               </CardContent>
             </Card>
 
             {/* Download Options */}
-            <Card style={{ backgroundColor: "var(--card)" }}>
+            <Card className="bg-card">
               <CardHeader>
                 <CardTitle
-                  className="flex items-center gap-2"
-                  style={{ color: "var(--foreground)" }}
+                  className="flex items-center gap-2 text-foreground"
                 >
-                  <Download className="h-5 w-5" style={{ color: "var(--primary)" }} />
+                  <Download className="h-5 w-5 text-primary" />
                   Download Options
                 </CardTitle>
               </CardHeader>
@@ -156,34 +151,27 @@ export default function DownloadPage() {
                       style={{ borderColor: "var(--border)" }}
                     >
                       <div className="flex items-center gap-3">
-                        <div
-                          className="rounded-lg p-2"
-                          style={{ backgroundColor: "var(--accent)" }}
-                        >
-                          <option.icon className="h-5 w-5" style={{ color: "var(--primary)" }} />
+                        <div className="rounded-lg p-2 bg-accent">
+                          <option.icon className="h-5 w-5 text-primary" />
                         </div>
                         <div>
                           <div className="flex items-center gap-2">
-                            <span className="font-semibold" style={{ color: "var(--foreground)" }}>
+                            <span className="font-semibold text-foreground">
                               {option.type} - {option.quality}
                             </span>
                             {option.recommended && (
-                              <Badge style={{ backgroundColor: "var(--primary)", color: "white" }}>
+                              <Badge className="bg-primary text-white">
                                 Recommended
                               </Badge>
                             )}
                           </div>
-                          <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>
+                          <p className="text-sm text-muted-foreground">
                             File size: {option.size}
                           </p>
                         </div>
                       </div>
                       <Button
-                        style={{
-                          backgroundColor: "var(--primary)",
-                          color: "var(--primary-foreground)",
-                          border: "none",
-                        }}
+                        className="bg-primary text-primary-foreground border-none"
                       >
                         <Download className="mr-2 h-4 w-4" />
                         Download
@@ -199,9 +187,9 @@ export default function DownloadPage() {
           {/* Sidebar - Channel Info */}
           <div className="space-y-6">
             {/* Channel Information */}
-            <Card style={{ backgroundColor: "var(--card)" }}>
+            <Card className="bg-card">
               <CardHeader>
-                <CardTitle style={{ color: "var(--foreground)" }}>Channel Information</CardTitle>
+                <CardTitle className="text-foreground">Channel Information</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-start gap-3">
@@ -214,7 +202,7 @@ export default function DownloadPage() {
                   />
                   <div className="flex-1">
                     <div className="mb-1 flex items-center gap-2">
-                      <h3 className="font-semibold" style={{ color: "var(--foreground)" }}>
+                      <h3 className="font-semibold text-foreground">
                         {videoData.channel.name}
                       </h3>
                       {videoData.channel.verified && (
@@ -223,7 +211,7 @@ export default function DownloadPage() {
                         </Badge>
                       )}
                     </div>
-                    <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>
+                    <p className="text-sm text-muted-foreground">
                       {videoData.channel.subscribers} subscribers
                     </p>
                   </div>
@@ -232,10 +220,10 @@ export default function DownloadPage() {
                 <Separator />
 
                 <div>
-                  <h4 className="mb-2 font-medium" style={{ color: "var(--foreground)" }}>
+                  <h4 className="mb-2 font-medium text-foreground">
                     About
                   </h4>
-                  <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>
+                  <p className="text-sm text-muted-foreground">
                     {videoData.channel.bio}
                   </p>
                 </div>
@@ -243,30 +231,27 @@ export default function DownloadPage() {
                 <Separator />
 
                 <div>
-                  <h4 className="mb-3 font-medium" style={{ color: "var(--foreground)" }}>
+                  <h4 className="mb-3 font-medium text-foreground">
                     Social Links
                   </h4>
                   <div className="space-y-2">
                     <Link
                       href={videoData.channel.socialLinks.youtube}
-                      className="flex items-center gap-2 text-sm transition-opacity hover:opacity-80"
-                      style={{ color: "var(--primary)" }}
+                      className="flex items-center gap-2 text-sm transition-opacity hover:opacity-80 text-primary"
                     >
                       <ExternalLink className="h-4 w-4" />
                       YouTube Channel
                     </Link>
                     <Link
                       href={videoData.channel.socialLinks.twitter}
-                      className="flex items-center gap-2 text-sm transition-opacity hover:opacity-80"
-                      style={{ color: "var(--primary)" }}
+                      className="flex items-center gap-2 text-sm transition-opacity hover:opacity-80 text-primary"
                     >
                       <ExternalLink className="h-4 w-4" />
                       Twitter
                     </Link>
                     <Link
                       href={videoData.channel.socialLinks.website}
-                      className="flex items-center gap-2 text-sm transition-opacity hover:opacity-80"
-                      style={{ color: "var(--primary)" }}
+                      className="flex items-center gap-2 text-sm transition-opacity hover:opacity-80 text-primary"
                     >
                       <ExternalLink className="h-4 w-4" />
                       Website
@@ -277,25 +262,25 @@ export default function DownloadPage() {
             </Card>
 
             {/* Download Info */}
-            <Card style={{ backgroundColor: "var(--card)" }}>
+            <Card className="bg-card">
               <CardHeader>
-                <CardTitle style={{ color: "var(--foreground)" }}>Download Information</CardTitle>
+                <CardTitle className="text-foreground">Download Information</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="flex items-center gap-2 text-sm">
-                  <Clock className="h-4 w-4" style={{ color: "var(--primary)" }} />
-                  <span style={{ color: "var(--muted-foreground)" }}>
+                  <Clock className="h-4 w-4 text-primary" />
+                  <span className="text-muted-foreground">
                     Estimated download time: 30-60 seconds
                   </span>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
-                  <FileVideo className="h-4 w-4" style={{ color: "var(--primary)" }} />
-                  <span style={{ color: "var(--muted-foreground)" }}>
+                  <FileVideo className="h-4 w-4 text-primary" />
+                  <span className="text-muted-foreground">
                     Multiple formats available
                   </span>
                 </div>
-                <div className="rounded-lg p-3" style={{ backgroundColor: "var(--accent)" }}>
-                  <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>
+                <div className="rounded-lg p-3 bg-accent">
+                  <p className="text-xs text-muted-foreground">
                     <strong>Note:</strong> Please respect copyright laws and only download content
                     you have permission to use.
                   </p>

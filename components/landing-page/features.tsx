@@ -13,13 +13,10 @@ export default function Features() {
     >
       <div className="container mx-auto px-4">
         <div className="mb-16 text-center">
-          <h2
-            className="mb-4 text-3xl font-bold md:text-4xl"
-            style={{ color: "var(--foreground)" }}
-          >
+          <h2 className="text-foreground mb-4 text-3xl font-bold md:text-4xl">
             Why Choose Our Downloader?
           </h2>
-          <p className="mx-auto max-w-2xl text-xl" style={{ color: "var(--muted-foreground)" }}>
+          <p className="text-muted-foreground mx-auto max-w-2xl text-xl">
             Experience the fastest and most reliable way to download YouTube videos
           </p>
         </div>
@@ -76,12 +73,10 @@ export default function Features() {
                     border: "1px solid rgba(255, 0, 0, 0.2)",
                   }}
                 >
-                  <feature.icon className="h-6 w-6" style={{ color: "var(--primary)" }} />
+                  <feature.icon className="text-primary h-6 w-6" />
                 </div>
-                <h3 className="mb-3 text-xl font-semibold" style={{ color: "var(--foreground)" }}>
-                  {feature.title}
-                </h3>
-                <p style={{ color: "var(--muted-foreground)" }}>{feature.desc}</p>
+                <h3 className="text-foreground mb-3 text-xl font-semibold">{feature.title}</h3>
+                <p className="text-muted-foreground">{feature.desc}</p>
               </CardContent>
             </Card>
           ))}

@@ -1,9 +1,8 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
-import { Download, Zap, Shield, Smartphone } from "lucide-react";
-import Link from "next/link";
+
+import { Zap, Shield, Smartphone } from "lucide-react";
 import { Suspense } from "react";
+import UrlInput from "./landing-page/url-input";
+import UrlInputLoading from "./landing-page/url-input";
 
 export default function Hero() {
   return (
@@ -33,62 +32,10 @@ export default function Hero() {
           </p>
 
           {/* URL Input Section */}
-          <Suspense
-            fallback={
-              <div className="mx-auto mb-8 max-w-2xl">
-                <div className="animate-pulse rounded-lg bg-gray-200 p-6 shadow-lg">
-                  <div className="flex flex-col gap-4 sm:flex-row">
-                    <div className="h-12 flex-1 rounded-md bg-gray-300" />
-                    <div className="h-12 w-32 rounded-md bg-gray-300" />
-                  </div>
-                  <div className="mt-3 h-4 w-1/2 rounded bg-gray-300" />
-                </div>
-              </div>
-            }
-          >
-            <div className="mx-auto mb-8 max-w-2xl">
-              <Card
-                className="p-6 shadow-lg"
-                style={{
-                  backgroundColor: "var(--card)",
-                  borderColor: "var(--primary)",
-                  borderWidth: "1px",
-                }}
-              >
-                <CardContent className="p-0">
-                  <div className="flex flex-col gap-4 sm:flex-row">
-                    <Input
-                      type="url"
-                      placeholder="Paste YouTube URL here..."
-                      className="h-12 flex-1 border-2 text-base"
-                      style={{
-                        backgroundColor: "var(--input)",
-                        borderColor: "var(--border)",
-                        color: "var(--foreground)",
-                      }}
-                    />
-                    <Link href="/download">
-                      <Button
-                        size="lg"
-                        className="h-12 w-full px-8 font-semibold sm:w-auto"
-                        style={{
-                          backgroundColor: "var(--primary)",
-                          color: "var(--primary-foreground)",
-                          border: "none",
-                        }}
-                      >
-                        <Download className="mr-2 h-5 w-5" />
-                        Download
-                      </Button>
-                    </Link>
-                  </div>
-                  <p className="mt-3 text-sm" style={{ color: "var(--muted-foreground)" }}>
-                    Supports all YouTube video formats and qualities
-                  </p>
-                </CardContent>
-              </Card>
-            </div>
+          <Suspense fallback={<UrlInputLoading />}>
+            <UrlInput />
           </Suspense>
+
           <div className="flex flex-wrap justify-center gap-4 text-sm">
             <div className="flex items-center gap-2">
               <Shield className="h-4 w-4" style={{ color: "var(--primary)" }} />
