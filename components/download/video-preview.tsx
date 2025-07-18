@@ -13,6 +13,7 @@ type VideoData = {
   likes: string;
   uploadDate: string;
   description: string;
+  isShort?: boolean;
   channel: {
     name: string;
     avatar: string;
@@ -28,12 +29,16 @@ type VideoData = {
 };
 
 export default function VideoPreview({ videoData }: { videoData: VideoData }) {
+  const videoUrl = videoData.isShort
+    ? `https://www.youtube.com/shorts/${videoData.id}`
+    : `https://www.youtube.com/watch?v=${videoData.id}`;
+
   return (
     <Card className="bg-card">
       <CardContent className="pt-0">
         <div className="relative">
           <a
-            href={`https://www.youtube.com/watch?v=${videoData.id}`}
+            href={videoUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="group relative block"
