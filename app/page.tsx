@@ -17,11 +17,11 @@ export default function YouTubeDownloaderLanding() {
         style={{ borderColor: "var(--border)", backgroundColor: "var(--background)" }}
       >
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
-          <div className="flex items-center justify-center space-x-2">
-            <Image src={"/logo/logo-saas.png"} alt="YTDownloader Logo" width={32} height={32} />
-            <span className="text-xl font-bold" style={{ color: "var(--foreground)" }}>
-              YTBDownloader
-            </span>
+          <div className="flex items-center space-x-2">
+          <Image src={"/logo/logo-saas.png"} alt="YTDownloader Logo" width={32} height={32} />
+                <span className="text-xl font-bold" style={{ color: "var(--foreground)" }}>
+                  YTBDownloader
+                </span>
           </div>
           <nav className="hidden items-center space-x-6 md:flex">
             <Link
@@ -97,18 +97,20 @@ export default function YouTubeDownloaderLanding() {
                         color: "var(--foreground)",
                       }}
                     />
-                    <Button
-                      size="lg"
-                      className="h-12 px-8 font-semibold"
-                      style={{
-                        backgroundColor: "var(--primary)",
-                        color: "var(--primary-foreground)",
-                        border: "none",
-                      }}
-                    >
-                      <Download className="mr-2 h-5 w-5" />
-                      Download
-                    </Button>
+                    <Link href="/download">
+                      <Button
+                        size="lg"
+                        className="h-12 w-full px-8 font-semibold sm:w-auto"
+                        style={{
+                          backgroundColor: "var(--primary)",
+                          color: "var(--primary-foreground)",
+                          border: "none",
+                        }}
+                      >
+                        <Download className="mr-2 h-5 w-5" />
+                        Download
+                      </Button>
+                    </Link>
                   </div>
                   <p className="mt-3 text-sm" style={{ color: "var(--muted-foreground)" }}>
                     Supports all YouTube video formats and qualities
@@ -287,18 +289,20 @@ export default function YouTubeDownloaderLanding() {
             <p className="mb-8 text-xl" style={{ color: "var(--muted-foreground)" }}>
               Join millions of users who trust our YouTube downloader for their video needs
             </p>
-            <Button
-              size="lg"
-              className="h-12 px-8 font-semibold"
-              style={{
-                backgroundColor: "var(--primary)",
-                color: "var(--primary-foreground)",
-                border: "none",
-              }}
-            >
-              <Download className="mr-2 h-5 w-5" />
-              Start Downloading Now
-            </Button>
+            <Link href="/download">
+              <Button
+                size="lg"
+                className="h-12 px-8 font-semibold"
+                style={{
+                  backgroundColor: "var(--primary)",
+                  color: "var(--primary-foreground)",
+                  border: "none",
+                }}
+              >
+                <Download className="mr-2 h-5 w-5" />
+                Start Downloading Now
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
