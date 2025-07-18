@@ -152,7 +152,9 @@ export default function UrlInput() {
   const errorMessage = errors.url?.message || realTimeValidation?.error || submitError;
 
   // Button should be enabled only when URL is valid and not submitting
-  const isDownloadDisabled = !realTimeValidation?.isValid || isSubmitting || !isValid || hasError;
+  const isDownloadDisabled = Boolean(
+    !realTimeValidation?.isValid || isSubmitting || !isValid || hasError
+  );
 
   return (
     <div className="mx-auto mb-8 max-w-2xl">
