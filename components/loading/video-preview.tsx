@@ -5,7 +5,7 @@ export default function VideoPreviewSkeleton() {
     <Card className="bg-card animate-pulse">
       <CardContent className="p-0">
         <div className="relative">
-          <div className="h-[220px] w-full rounded-t-lg bg-gray-200" />
+          <div className="aspect-video w-full rounded-t-lg bg-gray-200" />
           <div className="bg-opacity-40 absolute inset-0 flex items-center justify-center rounded-t-lg">
             <div className="h-16 w-16 rounded-full bg-gray-300 opacity-80" />
           </div>

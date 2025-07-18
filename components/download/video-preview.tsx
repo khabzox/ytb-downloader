@@ -4,21 +4,40 @@ import { Play, Eye, ThumbsUp, Calendar } from "lucide-react";
 import Image from "next/image";
 import React from "react";
 
-export default function VideoPreview({ videoData }: { videoData: any }) {
+export default function VideoPreview() {
+  // Mock data for https://www.youtube.com/watch?v=6sgs1EZLF5E
+  const videoData = {
+    title: "How to Build a SaaS App with Next.js, Stripe, & Supabase | Full Tutorial",
+    thumbnail: "https://img.youtube.com/vi/6sgs1EZLF5E/maxresdefault.jpg",
+    duration: "2:00:00",
+    views: "1,234,567",
+    likes: "45,678",
+    uploadDate: "2024-01-15",
+    description:
+      "Learn how to build a modern SaaS application using Next.js, Stripe for payments, and Supabase for the backend. This full tutorial covers authentication, subscriptions, and deployment.",
+  };
   return (
     <Card className="bg-card">
-      <CardContent className="p-0">
+      <CardContent className="pt-0">
         <div className="relative">
-          <Image
-            src={videoData.thumbnail || "/placeholder.svg"}
-            alt={videoData.title}
-            width={640}
-            height={360}
-            className="h-auto w-full rounded-t-lg"
-          />
-          <div className="bg-opacity-40 absolute inset-0 flex items-center justify-center rounded-t-lg bg-black">
-            <Play className="h-16 w-16 text-white opacity-80" />
-          </div>
+          <a
+            href="https://www.youtube.com/watch?v=6sgs1EZLF5E"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative block"
+            title={videoData.title}
+          >
+            <Image
+              src={videoData.thumbnail}
+              alt={videoData.title}
+              height={360}
+              width={640}
+              className="w-full rounded-t-lg"
+            />
+            <div className="absolute inset-0 flex items-center justify-center rounded-t-lg bg-black/10 transition-colors group-hover:bg-black/20">
+              <Play className="h-16 w-16 text-white opacity-80" />
+            </div>
+          </a>
           <Badge className="absolute right-2 bottom-2 bg-black/80 text-white">
             {videoData.duration}
           </Badge>
