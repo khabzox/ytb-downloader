@@ -1,20 +1,13 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import {
-  Download,
-  Play,
-  Eye,
-  ThumbsUp,
-  Calendar,
-  Clock,
-  FileVideo,
-  Music,
-  ExternalLink,
-} from "lucide-react";
-import Link from "next/link";
-import Image from "next/image";
+import { FileVideo, Music } from "lucide-react";
+
+import VideoPreview from "@/components/download/video-preview";
+import DownloadOptions from "@/components/download/download-options";
+import ChannelInformation from "@/components/download/channel-information";
+import DownloadInfo from "@/components/download/download-info";
+import { Suspense } from "react";
+import VideoPreviewSkeleton from "@/components/loading/video-preview";
+import ChannelInformationSkeleton from "@/components/loading/channel-information";
+import DownloadOptionsSkeleton from "@/components/loading/download-options";
 
 export default function DownloadPage() {
   // Mock video data - in real app this would come from URL params or API
@@ -87,180 +80,27 @@ export default function DownloadPage() {
           {/* Main Content */}
           <div className="space-y-6 lg:col-span-2">
             {/* Video Preview */}
-            <Card className="bg-card">
-              <CardContent className="p-0">
-                <div className="relative">
-                  <Image
-                    src={videoData.thumbnail || "/placeholder.svg"}
-                    alt={videoData.title}
-                    width={640}
-                    height={360}
-                    className="h-auto w-full rounded-t-lg"
-                  />
-                  <div className="bg-opacity-40 absolute inset-0 flex items-center justify-center rounded-t-lg bg-black">
-                    <Play className="h-16 w-16 text-white opacity-80" />
-                  </div>
-                  <Badge className="absolute right-2 bottom-2 bg-black/80 text-white">
-                    {videoData.duration}
-                  </Badge>
-                </div>
-                <div className="p-6">
-                  <h1 className="text-foreground mb-4 text-2xl font-bold">{videoData.title}</h1>
-                  <div className="text-muted-foreground mb-4 flex flex-wrap gap-4 text-sm">
-                    <div className="flex items-center gap-1">
-                      <Eye className="h-4 w-4" />
-                      <span>{videoData.views} views</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <ThumbsUp className="h-4 w-4" />
-                      <span>{videoData.likes} likes</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Calendar className="h-4 w-4" />
-                      <span>{new Date(videoData.uploadDate).toLocaleDateString()}</span>
-                    </div>
-                  </div>
-                  <p className="text-muted-foreground">{videoData.description}</p>
-                </div>
-              </CardContent>
-            </Card>
+            <Suspense fallback={<VideoPreviewSkeleton />}>
+              <VideoPreview videoData={videoData} />
+            </Suspense>
 
             {/* Download Options */}
-            <Card className="bg-card">
-              <CardHeader>
-                <CardTitle className="text-foreground flex items-center gap-2">
-                  <Download className="text-primary h-5 w-5" />
-                  Download Options
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {downloadOptions.map((option, index) => (
-                  <div key={index}>
-                    <div
-                      className="flex items-center justify-between rounded-lg border p-4"
-                      style={{ borderColor: "var(--border)" }}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="bg-accent rounded-lg p-2">
-                          <option.icon className="text-primary h-5 w-5" />
-                        </div>
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-foreground font-semibold">
-                              {option.type} - {option.quality}
-                            </span>
-                            {option.recommended && (
-                              <Badge className="bg-primary text-white">Recommended</Badge>
-                            )}
-                          </div>
-                          <p className="text-muted-foreground text-sm">File size: {option.size}</p>
-                        </div>
-                      </div>
-                      <Button className="bg-primary text-primary-foreground border-none">
-                        <Download className="mr-2 h-4 w-4" />
-                        Download
-                      </Button>
-                    </div>
-                    {index < downloadOptions.length - 1 && <Separator />}
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
+            <Suspense fallback={<DownloadOptionsSkeleton />}>
+              <DownloadOptions options={downloadOptions} />
+            </Suspense>
           </div>
 
           {/* Sidebar - Channel Info */}
           <div className="space-y-6">
             {/* Channel Information */}
-            <Card className="bg-card">
-              <CardHeader>
-                <CardTitle className="text-foreground">Channel Information</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-start gap-3">
-                  <Image
-                    src={videoData.channel.avatar || "/placeholder.svg"}
-                    alt={videoData.channel.name}
-                    width={60}
-                    height={60}
-                    className="rounded-full"
-                  />
-                  <div className="flex-1">
-                    <div className="mb-1 flex items-center gap-2">
-                      <h3 className="text-foreground font-semibold">{videoData.channel.name}</h3>
-                      {videoData.channel.verified && (
-                        <Badge variant="secondary" className="text-xs">
-                          ✓ Verified
-                        </Badge>
-                      )}
-                    </div>
-                    <p className="text-muted-foreground text-sm">
-                      {videoData.channel.subscribers} subscribers
-                    </p>
-                  </div>
-                </div>
-
-                <Separator />
-
-                <div>
-                  <h4 className="text-foreground mb-2 font-medium">About</h4>
-                  <p className="text-muted-foreground text-sm">{videoData.channel.bio}</p>
-                </div>
-
-                <Separator />
-
-                <div>
-                  <h4 className="text-foreground mb-3 font-medium">Social Links</h4>
-                  <div className="space-y-2">
-                    <Link
-                      href={videoData.channel.socialLinks.youtube}
-                      className="text-primary flex items-center gap-2 text-sm transition-opacity hover:opacity-80"
-                    >
-                      <ExternalLink className="h-4 w-4" />
-                      YouTube Channel
-                    </Link>
-                    <Link
-                      href={videoData.channel.socialLinks.twitter}
-                      className="text-primary flex items-center gap-2 text-sm transition-opacity hover:opacity-80"
-                    >
-                      <ExternalLink className="h-4 w-4" />
-                      Twitter
-                    </Link>
-                    <Link
-                      href={videoData.channel.socialLinks.website}
-                      className="text-primary flex items-center gap-2 text-sm transition-opacity hover:opacity-80"
-                    >
-                      <ExternalLink className="h-4 w-4" />
-                      Website
-                    </Link>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <Suspense fallback={<ChannelInformationSkeleton />}>
+              <ChannelInformation videoData={videoData} />
+            </Suspense>
 
             {/* Download Info */}
-            <Card className="bg-card">
-              <CardHeader>
-                <CardTitle className="text-foreground">Download Information</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex items-center gap-2 text-sm">
-                  <Clock className="text-primary h-4 w-4" />
-                  <span className="text-muted-foreground">
-                    Estimated download time: 30-60 seconds
-                  </span>
-                </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <FileVideo className="text-primary h-4 w-4" />
-                  <span className="text-muted-foreground">Multiple formats available</span>
-                </div>
-                <div className="bg-accent rounded-lg p-3">
-                  <p className="text-muted-foreground text-xs">
-                    <strong>Note:</strong> Please respect copyright laws and only download content
-                    you have permission to use.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
+            <Suspense fallback={<DownloadOptionsSkeleton />}>
+              <DownloadInfo />
+            </Suspense>
           </div>
         </div>
       </div>

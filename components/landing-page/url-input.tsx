@@ -29,7 +29,7 @@ export default function UrlInput() {
           {errors.url && (
             <div className="mb-4 flex items-center gap-2 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
               <svg
-                className="h-4 w-4 text-primary"
+                className="text-primary h-4 w-4"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="2"
