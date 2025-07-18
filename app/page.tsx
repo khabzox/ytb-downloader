@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Download, Zap, Shield, Smartphone, Clock, Video } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function YouTubeDownloaderLanding() {
   return (
@@ -16,10 +17,10 @@ export default function YouTubeDownloaderLanding() {
         style={{ borderColor: "var(--border)", backgroundColor: "var(--background)" }}
       >
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
-          <div className="flex items-center space-x-2">
-            <Video className="h-8 w-8" style={{ color: "var(--primary)" }} />
+          <div className="flex items-center justify-center space-x-2">
+            <Image src={"/logo/logo-saas.png"} alt="YTDownloader Logo" width={32} height={32} />
             <span className="text-xl font-bold" style={{ color: "var(--foreground)" }}>
-              YTDownloader
+              YTBDownloader
             </span>
           </div>
           <nav className="hidden items-center space-x-6 md:flex">
@@ -315,9 +316,9 @@ export default function YouTubeDownloaderLanding() {
           <div className="grid gap-8 md:grid-cols-4">
             <div className="md:col-span-2">
               <div className="mb-4 flex items-center space-x-2">
-                <Video className="h-8 w-8" style={{ color: "var(--primary)" }} />
+                <Image src={"/logo/logo-saas.png"} alt="YTDownloader Logo" width={32} height={32} />
                 <span className="text-xl font-bold" style={{ color: "var(--foreground)" }}>
-                  YTDownloader
+                  YTBDownloader
                 </span>
               </div>
               <p className="mb-4" style={{ color: "var(--muted-foreground)" }}>
