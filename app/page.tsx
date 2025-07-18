@@ -5,7 +5,7 @@ import HowItWorks from "@/components/landing-page/how-it-work";
 import Cta from "@/components/landing-page/cta";
 import Footer from "@/components/landing-page/footer";
 
-export default function YouTubeDownloaderLanding() {
+export default function Home() {
   return (
     <div className="bg-background text-foreground min-h-screen">
       {/* Header */}
