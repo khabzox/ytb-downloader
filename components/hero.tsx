@@ -1,4 +1,3 @@
-
 import { Zap, Shield, Smartphone } from "lucide-react";
 import { Suspense } from "react";
 import UrlInput from "./landing-page/url-input";

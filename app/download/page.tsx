@@ -81,9 +81,7 @@ export default function DownloadPage() {
   ];
 
   return (
-    <div
-      className="min-h-screen bg-background text-foreground"
-    >
+    <div className="bg-background text-foreground min-h-screen">
       <div className="container mx-auto px-4 py-8">
         <div className="grid gap-8 lg:grid-cols-3">
           {/* Main Content */}
@@ -102,19 +100,13 @@ export default function DownloadPage() {
                   <div className="bg-opacity-40 absolute inset-0 flex items-center justify-center rounded-t-lg bg-black">
                     <Play className="h-16 w-16 text-white opacity-80" />
                   </div>
-                  <Badge
-                    className="absolute right-2 bottom-2 bg-black/80 text-white"
-                  >
+                  <Badge className="absolute right-2 bottom-2 bg-black/80 text-white">
                     {videoData.duration}
                   </Badge>
                 </div>
                 <div className="p-6">
-                  <h1 className="mb-4 text-2xl font-bold text-foreground">
-                    {videoData.title}
-                  </h1>
-                  <div
-                    className="mb-4 flex flex-wrap gap-4 text-sm text-muted-foreground"
-                  >
+                  <h1 className="text-foreground mb-4 text-2xl font-bold">{videoData.title}</h1>
+                  <div className="text-muted-foreground mb-4 flex flex-wrap gap-4 text-sm">
                     <div className="flex items-center gap-1">
                       <Eye className="h-4 w-4" />
                       <span>{videoData.views} views</span>
@@ -136,10 +128,8 @@ export default function DownloadPage() {
             {/* Download Options */}
             <Card className="bg-card">
               <CardHeader>
-                <CardTitle
-                  className="flex items-center gap-2 text-foreground"
-                >
-                  <Download className="h-5 w-5 text-primary" />
+                <CardTitle className="text-foreground flex items-center gap-2">
+                  <Download className="text-primary h-5 w-5" />
                   Download Options
                 </CardTitle>
               </CardHeader>
@@ -151,28 +141,22 @@ export default function DownloadPage() {
                       style={{ borderColor: "var(--border)" }}
                     >
                       <div className="flex items-center gap-3">
-                        <div className="rounded-lg p-2 bg-accent">
-                          <option.icon className="h-5 w-5 text-primary" />
+                        <div className="bg-accent rounded-lg p-2">
+                          <option.icon className="text-primary h-5 w-5" />
                         </div>
                         <div>
                           <div className="flex items-center gap-2">
-                            <span className="font-semibold text-foreground">
+                            <span className="text-foreground font-semibold">
                               {option.type} - {option.quality}
                             </span>
                             {option.recommended && (
-                              <Badge className="bg-primary text-white">
-                                Recommended
-                              </Badge>
+                              <Badge className="bg-primary text-white">Recommended</Badge>
                             )}
                           </div>
-                          <p className="text-sm text-muted-foreground">
-                            File size: {option.size}
-                          </p>
+                          <p className="text-muted-foreground text-sm">File size: {option.size}</p>
                         </div>
                       </div>
-                      <Button
-                        className="bg-primary text-primary-foreground border-none"
-                      >
+                      <Button className="bg-primary text-primary-foreground border-none">
                         <Download className="mr-2 h-4 w-4" />
                         Download
                       </Button>
@@ -202,16 +186,14 @@ export default function DownloadPage() {
                   />
                   <div className="flex-1">
                     <div className="mb-1 flex items-center gap-2">
-                      <h3 className="font-semibold text-foreground">
-                        {videoData.channel.name}
-                      </h3>
+                      <h3 className="text-foreground font-semibold">{videoData.channel.name}</h3>
                       {videoData.channel.verified && (
                         <Badge variant="secondary" className="text-xs">
                           ✓ Verified
                         </Badge>
                       )}
                     </div>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-muted-foreground text-sm">
                       {videoData.channel.subscribers} subscribers
                     </p>
                   </div>
@@ -220,38 +202,32 @@ export default function DownloadPage() {
                 <Separator />
 
                 <div>
-                  <h4 className="mb-2 font-medium text-foreground">
-                    About
-                  </h4>
-                  <p className="text-sm text-muted-foreground">
-                    {videoData.channel.bio}
-                  </p>
+                  <h4 className="text-foreground mb-2 font-medium">About</h4>
+                  <p className="text-muted-foreground text-sm">{videoData.channel.bio}</p>
                 </div>
 
                 <Separator />
 
                 <div>
-                  <h4 className="mb-3 font-medium text-foreground">
-                    Social Links
-                  </h4>
+                  <h4 className="text-foreground mb-3 font-medium">Social Links</h4>
                   <div className="space-y-2">
                     <Link
                       href={videoData.channel.socialLinks.youtube}
-                      className="flex items-center gap-2 text-sm transition-opacity hover:opacity-80 text-primary"
+                      className="text-primary flex items-center gap-2 text-sm transition-opacity hover:opacity-80"
                     >
                       <ExternalLink className="h-4 w-4" />
                       YouTube Channel
                     </Link>
                     <Link
                       href={videoData.channel.socialLinks.twitter}
-                      className="flex items-center gap-2 text-sm transition-opacity hover:opacity-80 text-primary"
+                      className="text-primary flex items-center gap-2 text-sm transition-opacity hover:opacity-80"
                     >
                       <ExternalLink className="h-4 w-4" />
                       Twitter
                     </Link>
                     <Link
                       href={videoData.channel.socialLinks.website}
-                      className="flex items-center gap-2 text-sm transition-opacity hover:opacity-80 text-primary"
+                      className="text-primary flex items-center gap-2 text-sm transition-opacity hover:opacity-80"
                     >
                       <ExternalLink className="h-4 w-4" />
                       Website
@@ -268,19 +244,17 @@ export default function DownloadPage() {
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="flex items-center gap-2 text-sm">
-                  <Clock className="h-4 w-4 text-primary" />
+                  <Clock className="text-primary h-4 w-4" />
                   <span className="text-muted-foreground">
                     Estimated download time: 30-60 seconds
                   </span>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
-                  <FileVideo className="h-4 w-4 text-primary" />
-                  <span className="text-muted-foreground">
-                    Multiple formats available
-                  </span>
+                  <FileVideo className="text-primary h-4 w-4" />
+                  <span className="text-muted-foreground">Multiple formats available</span>
                 </div>
-                <div className="rounded-lg p-3 bg-accent">
-                  <p className="text-xs text-muted-foreground">
+                <div className="bg-accent rounded-lg p-3">
+                  <p className="text-muted-foreground text-xs">
                     <strong>Note:</strong> Please respect copyright laws and only download content
                     you have permission to use.
                   </p>

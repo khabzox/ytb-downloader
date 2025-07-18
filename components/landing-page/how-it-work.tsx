@@ -1,12 +1,10 @@
 export default function HowItWorks() {
   return (
-    <section id="how-it-works" className="py-20 bg-background">
+    <section id="how-it-works" className="bg-background py-20">
       <div className="container mx-auto px-4">
         <div className="mb-16 text-center">
-          <h2 className="mb-4 text-3xl font-bold text-foreground md:text-4xl">
-            How It Works
-          </h2>
-          <p className="text-xl text-muted-foreground">
+          <h2 className="text-foreground mb-4 text-3xl font-bold md:text-4xl">How It Works</h2>
+          <p className="text-muted-foreground text-xl">
             Download YouTube videos in just 3 simple steps
           </p>
         </div>
@@ -31,14 +29,10 @@ export default function HowItWorks() {
               },
             ].map((item, index) => (
               <div key={index} className="text-center">
-                <div
-                  className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full text-xl font-bold text-white bg-primary"
-                >
+                <div className="bg-primary mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full text-xl font-bold text-white">
                   {item.step}
                 </div>
-                <h3 className="mb-3 text-xl font-semibold text-foreground">
-                  {item.title}
-                </h3>
+                <h3 className="text-foreground mb-3 text-xl font-semibold">{item.title}</h3>
                 <p className="text-muted-foreground">{item.desc}</p>
               </div>
             ))}

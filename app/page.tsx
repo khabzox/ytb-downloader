@@ -7,9 +7,7 @@ import Footer from "@/components/landing-page/footer";
 
 export default function YouTubeDownloaderLanding() {
   return (
-    <div
-      className="min-h-screen bg-background text-foreground"
-    >
+    <div className="bg-background text-foreground min-h-screen">
       {/* Header */}
       <Header />
 
