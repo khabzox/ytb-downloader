@@ -4,24 +4,36 @@ import { Play, Eye, ThumbsUp, Calendar } from "lucide-react";
 import Image from "next/image";
 import React from "react";
 
-export default function VideoPreview() {
-  // Mock data for https://www.youtube.com/watch?v=6sgs1EZLF5E
-  const videoData = {
-    title: "How to Build a SaaS App with Next.js, Stripe, & Supabase | Full Tutorial",
-    thumbnail: "https://img.youtube.com/vi/6sgs1EZLF5E/maxresdefault.jpg",
-    duration: "2:00:00",
-    views: "1,234,567",
-    likes: "45,678",
-    uploadDate: "2024-01-15",
-    description:
-      "Learn how to build a modern SaaS application using Next.js, Stripe for payments, and Supabase for the backend. This full tutorial covers authentication, subscriptions, and deployment.",
+type VideoData = {
+  id: string;
+  title: string;
+  thumbnail: string;
+  duration: string;
+  views: string;
+  likes: string;
+  uploadDate: string;
+  description: string;
+  channel: {
+    name: string;
+    avatar: string;
+    subscribers: string;
+    verified: boolean;
+    bio: string;
+    socialLinks: {
+      youtube: string;
+      twitter: string;
+      website: string;
+    };
   };
+};
+
+export default function VideoPreview({ videoData }: { videoData: VideoData }) {
   return (
     <Card className="bg-card">
       <CardContent className="pt-0">
         <div className="relative">
           <a
-            href="https://www.youtube.com/watch?v=6sgs1EZLF5E"
+            href={`https://www.youtube.com/watch?v=${videoData.id}`}
             target="_blank"
             rel="noopener noreferrer"
             className="group relative block"
