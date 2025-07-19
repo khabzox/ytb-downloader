@@ -329,8 +329,8 @@ export async function getYouTubeVideoData(
           setTimeout(() => reject(new Error("Validation timeout")), 10000),
         ),
       ]);
-    } catch (validationError: any) {
-      console.warn("URL validation failed, attempting to continue:", validationError.message);
+    } catch (validationError: unknown) {
+      console.warn("URL validation failed, attempting to continue:", (validationError as Error).message);
       isValid = true;
     }
 
@@ -343,7 +343,7 @@ export async function getYouTubeVideoData(
     }
 
     // Try to get video info with fallback mechanism
-    let info: any;
+    let info: unknown;
     let usedFallback = false;
     
     try {
@@ -352,57 +352,56 @@ export async function getYouTubeVideoData(
         ytdl.getInfo(videoId),
         new Promise((_, reject) => setTimeout(() => reject(new Error("Request timeout")), 30000)),
       ]);
-    } catch (infoError: any) {
-      console.error("Failed to get video info with main ytdl-core:", infoError);
-      
-      // If it's the "could not extract functions" error, try with @distube/ytdl-core
-      if (infoError.message?.includes("Could not extract functions") || 
-          infoError.message?.includes("could not extract functions")) {
-        try {
-          console.log("Trying fallback with @distube/ytdl-core...");
-          info = await Promise.race([
-            ytdlDistube.getInfo(videoId),
-            new Promise((_, reject) => setTimeout(() => reject(new Error("Fallback request timeout")), 30000)),
-          ]);
-          usedFallback = true;
-          console.log("Successfully got video info with @distube/ytdl-core");
-        } catch (fallbackError: any) {
-          console.error("Failed to get video info with fallback ytdl:", fallbackError);
-          
-          // If both fail, provide limited fallback info
+    } catch (infoError: unknown) {
+      if (typeof infoError === "object" && infoError && "message" in infoError && typeof (infoError as { message: unknown }).message === "string") {
+        const msg = (infoError as { message: string }).message;
+        if (msg.includes("Could not extract functions") || msg.includes("could not extract functions")) {
           try {
-            const fallbackInfo = await getFallbackVideoInfo(videoId);
-            return {
-              success: true,
-              data: {
-                videoInfo: fallbackInfo as YouTubeVideoInfo,
-                downloadOptions: [
-                  {
-                    type: "MP4" as const,
-                    quality: "1080p",
-                    size: "Unknown",
-                    hasAudio: true,
-                    hasVideo: true,
-                    recommended: true,
-                  },
-                ],
-              },
-              error: "Limited information available due to YouTube updates",
-              metadata: {
-                processingTime: Date.now() - startTime,
-                apiVersion: "1.0.0",
-                timestamp: new Date().toISOString(),
-              },
-            };
-          } catch {
-            // Complete fallback failed
+            console.log("Trying fallback with @distube/ytdl-core...");
+            info = await Promise.race([
+              ytdlDistube.getInfo(videoId),
+              new Promise((_, reject) => setTimeout(() => reject(new Error("Fallback request timeout")), 30000)),
+            ]);
+            usedFallback = true;
+            console.log("Successfully got video info with @distube/ytdl-core");
+          } catch (fallbackError: unknown) {
+            console.error("Failed to get video info with fallback ytdl:", fallbackError);
+            
+            // If both fail, provide limited fallback info
+            try {
+              const fallbackInfo = await getFallbackVideoInfo(videoId);
+              return {
+                success: true,
+                data: {
+                  videoInfo: fallbackInfo as YouTubeVideoInfo,
+                  downloadOptions: [
+                    {
+                      type: "MP4" as const,
+                      quality: "1080p",
+                      size: "Unknown",
+                      hasAudio: true,
+                      hasVideo: true,
+                      recommended: true,
+                    },
+                  ],
+                },
+                error: "Limited information available due to YouTube updates",
+                metadata: {
+                  processingTime: Date.now() - startTime,
+                  apiVersion: "1.0.0",
+                  timestamp: new Date().toISOString(),
+                },
+              };
+            } catch {
+              // Complete fallback failed
+            }
           }
         }
       }
       
       // If it's not a functions error or fallback also failed
       if (!usedFallback) {
-        const { message, type, retryAfter } = getUserFriendlyError(infoError);
+        const { message, type, retryAfter } = getUserFriendlyError(infoError as Error);
         return {
           success: false,
           error: message,
@@ -416,8 +415,8 @@ export async function getYouTubeVideoData(
       }
     }
 
-    const videoDetails = info.videoDetails;
-    const formats = info.formats || [];
+    const videoDetails = (info as any).videoDetails;
+    const formats = (info as any).formats || [];
     const isShort = isYouTubeShort(url);
 
     // Parse video information with enhanced data structure
@@ -578,9 +577,9 @@ export async function getYouTubeVideoData(
         timestamp: new Date().toISOString(),
       },
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("YouTube API Error:", error);
-    const { message, type } = getUserFriendlyError(error);
+    const { message, type } = getUserFriendlyError(error as Error);
 
     return {
       success: false,
@@ -616,7 +615,7 @@ export async function getVideoBasicInfo(url: string): Promise<{
       };
     }
 
-    let basicInfo: any;
+    let basicInfo: unknown;
     let usedFallback = false;
 
     try {
@@ -625,30 +624,31 @@ export async function getVideoBasicInfo(url: string): Promise<{
         ytdl.getBasicInfo(videoId),
         new Promise((_, reject) => setTimeout(() => reject(new Error("Request timeout")), 15000)),
       ]);
-    } catch (infoError: any) {
-      console.error("Failed to get basic info with main ytdl-core:", infoError);
-      
-      // If it's the "could not extract functions" error, try with @distube/ytdl-core
-      if (infoError.message?.includes("Could not extract functions") || 
-          infoError.message?.includes("could not extract functions")) {
-        try {
-          console.log("Trying fallback with @distube/ytdl-core for basic info...");
-          basicInfo = await Promise.race([
-            ytdlDistube.getBasicInfo(videoId),
-            new Promise((_, reject) => setTimeout(() => reject(new Error("Fallback request timeout")), 15000)),
-          ]);
-          usedFallback = true;
-          console.log("Successfully got basic info with @distube/ytdl-core");
-        } catch (fallbackError: any) {
-          console.error("Failed to get basic info with fallback ytdl:", fallbackError);
-          throw fallbackError;
+    } catch (infoError: unknown) {
+      if (typeof infoError === "object" && infoError && "message" in infoError && typeof (infoError as { message: unknown }).message === "string") {
+        const msg = (infoError as { message: string }).message;
+        if (msg.includes("Could not extract functions") || msg.includes("could not extract functions")) {
+          try {
+            console.log("Trying fallback with @distube/ytdl-core for basic info...");
+            basicInfo = await Promise.race([
+              ytdlDistube.getBasicInfo(videoId),
+              new Promise((_, reject) => setTimeout(() => reject(new Error("Fallback request timeout")), 15000)),
+            ]);
+            usedFallback = true;
+            console.log("Successfully got basic info with @distube/ytdl-core");
+          } catch (fallbackError: unknown) {
+            console.error("Failed to get basic info with fallback ytdl:", fallbackError);
+            throw fallbackError;
+          }
+        } else {
+          throw infoError;
         }
       } else {
         throw infoError;
       }
     }
 
-    const videoDetails = basicInfo.videoDetails;
+    const videoDetails = (basicInfo as any).videoDetails;
 
     return {
       success: true,
@@ -656,9 +656,9 @@ export async function getVideoBasicInfo(url: string): Promise<{
       thumbnail: getBestThumbnail(videoDetails?.thumbnails || []),
       duration: formatDuration(parseInt(videoDetails?.lengthSeconds || "0", 10)),
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Basic info error:", error);
-    const { message, type } = getUserFriendlyError(error);
+    const { message, type } = getUserFriendlyError(error as Error);
 
     return {
       success: false,
@@ -704,7 +704,7 @@ export async function checkYtdlHealth(): Promise<{
           },
         };
       }
-    } catch (mainError: any) {
+    } catch (mainError: unknown) {
       console.log("Main ytdl-core health check failed, trying @distube/ytdl-core...");
       
       // If main fails, try with distube
@@ -725,7 +725,7 @@ export async function checkYtdlHealth(): Promise<{
             },
           };
         }
-      } catch (distubeError: any) {
+      } catch (distubeError: unknown) {
         console.error("Both ytdl libraries failed health check:", { mainError, distubeError });
       }
     }
@@ -735,8 +735,8 @@ export async function checkYtdlHealth(): Promise<{
       error: "YouTube validation failed with both libraries",
       suggestion: "Both ytdl-core and @distube/ytdl-core are having issues. Try again later.",
     };
-  } catch (error: any) {
-    const { message, type } = getUserFriendlyError(error);
+  } catch (error: unknown) {
+    const { message, type } = getUserFriendlyError(error as Error);
 
     let suggestion = "Try again later";
     if (type === "YTDL_FUNCTIONS") {
@@ -757,33 +757,32 @@ export async function getDownloadUrl(
   itag: number,
 ): Promise<{ success: boolean; url?: string; error?: string; metadata?: any }> {
   try {
-    let info: any;
+    let info: unknown;
     let usedFallback = false;
 
     try {
       // First try with main ytdl-core
       info = await ytdl.getInfo(videoId);
-    } catch (infoError: any) {
-      console.error("Failed to get download info with main ytdl-core:", infoError);
-      
-      // If it's the "could not extract functions" error, try with @distube/ytdl-core
-      if (infoError.message?.includes("Could not extract functions") || 
-          infoError.message?.includes("could not extract functions")) {
-        try {
-          console.log("Trying fallback with @distube/ytdl-core for download...");
-          info = await ytdlDistube.getInfo(videoId);
-          usedFallback = true;
-          console.log("Successfully got download info with @distube/ytdl-core");
-        } catch (fallbackError: any) {
-          console.error("Failed to get download info with fallback ytdl:", fallbackError);
-          throw fallbackError;
+    } catch (infoError: unknown) {
+      if (typeof infoError === "object" && infoError && "message" in infoError && typeof (infoError as { message: unknown }).message === "string") {
+        const msg = (infoError as { message: string }).message;
+        if (msg.includes("Could not extract functions") || msg.includes("could not extract functions")) {
+          try {
+            console.log("Trying fallback with @distube/ytdl-core for download...");
+            info = await ytdlDistube.getInfo(videoId);
+            usedFallback = true;
+          } catch (fallbackError: unknown) {
+            throw fallbackError;
+          }
+        } else {
+          throw infoError;
         }
       } else {
         throw infoError;
       }
     }
 
-    const format = info.formats.find((f: any) => f.itag === itag);
+    const format = (info as any).formats.find((f: any) => f.itag === itag);
 
     if (!format) {
       return {
@@ -802,8 +801,8 @@ export async function getDownloadUrl(
         codecs: format.codecs,
       },
     };
-  } catch (error: any) {
-    const { message } = getUserFriendlyError(error);
+  } catch (error: unknown) {
+    const { message } = getUserFriendlyError(error as Error);
     return {
       success: false,
       error: message,
@@ -818,16 +817,19 @@ export function createVideoStream(url: string, options?: ytdl.downloadOptions) {
       filter: "audioandvideo",
       ...options,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     // If main ytdl fails, try with distube
-    if (error.message?.includes("Could not extract functions")) {
-      console.log("Using @distube/ytdl-core for video stream...");
-      const distubeOptions = { ...options } as any;
-      return ytdlDistube(url, {
-        quality: "highest" as any,
-        filter: "audioandvideo" as any,
-        ...distubeOptions,
-      });
+    if (typeof error === "object" && error && "message" in error && typeof (error as Error).message === "string") {
+      const msg = (error as Error).message;
+      if (msg.includes("Could not extract functions")) {
+        console.log("Using @distube/ytdl-core for video stream...");
+        const distubeOptions = { ...options } as any;
+        return ytdlDistube(url, {
+          quality: "highest" as any,
+          filter: "audioandvideo" as any,
+          ...distubeOptions,
+        });
+      }
     }
     throw error;
   }
@@ -840,16 +842,19 @@ export function createAudioStream(url: string, options?: ytdl.downloadOptions) {
       filter: "audioonly",
       ...options,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     // If main ytdl fails, try with distube
-    if (error.message?.includes("Could not extract functions")) {
-      console.log("Using @distube/ytdl-core for audio stream...");
-      const distubeOptions = { ...options } as any;
-      return ytdlDistube(url, {
-        quality: "highestaudio" as any,
-        filter: "audioonly" as any,
-        ...distubeOptions,
-      });
+    if (typeof error === "object" && error && "message" in error && typeof (error as Error).message === "string") {
+      const msg = (error as Error).message;
+      if (msg.includes("Could not extract functions")) {
+        console.log("Using @distube/ytdl-core for audio stream...");
+        const distubeOptions = { ...options } as any;
+        return ytdlDistube(url, {
+          quality: "highestaudio" as any,
+          filter: "audioonly" as any,
+          ...distubeOptions,
+        });
+      }
     }
     throw error;
   }
@@ -860,8 +865,19 @@ export function createVideoStreamWithFallback(url: string, options?: ytdl.downlo
     return ytdl(url, { quality: "highest", filter: "audioandvideo", ...options });
   } catch (err) {
     if (err instanceof Error && err.message?.includes("Could not extract functions")) {
-      // Omit 'format', 'quality', and 'filter' properties to avoid type conflict
-      const { format, quality, filter, ...distubeOptions } = options || {};
+      // Only copy allowed properties for distube
+      const distubeOptions: Record<string, unknown> = {};
+      if (options?.range) distubeOptions.range = options.range;
+      if (options?.begin) distubeOptions.begin = options.begin;
+      if (options?.liveBuffer) distubeOptions.liveBuffer = options.liveBuffer;
+      if (options?.highWaterMark) distubeOptions.highWaterMark = options.highWaterMark;
+      if (options?.IPv6Block) distubeOptions.IPv6Block = options.IPv6Block;
+      if (options?.dlChunkSize) distubeOptions.dlChunkSize = options.dlChunkSize;
+      if (options?.requestOptions) distubeOptions.requestOptions = options.requestOptions;
+      if (options?.lang) distubeOptions.lang = options.lang;
+      if (options?.format) {/* skip */}
+      if (options?.quality) {/* skip */}
+      if (options?.filter) {/* skip */}
       return ytdlDistube(url, {
         ...distubeOptions,
         quality: "highest",
@@ -874,17 +890,12 @@ export function createVideoStreamWithFallback(url: string, options?: ytdl.downlo
 
 // Future-ready utility functions
 export async function getVideoChapters(_videoId: string): Promise<unknown[]> {
-  // Placeholder for future implementation
   return [];
 }
-
 export async function getVideoSubtitles(_videoId: string, _language?: string): Promise<unknown[]> {
-  // Placeholder for future implementation
   return [];
 }
-
 export async function getVideoAnalytics(_videoId: string): Promise<unknown> {
-  // Placeholder for future implementation
   return null;
 }
 
