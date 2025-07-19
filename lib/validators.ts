@@ -125,12 +125,9 @@ export const youtubeUrlSchema = z.object({
   url: z
     .string()
     .min(1, "YouTube URL is required")
-    .refine(
-      (url: string) => validateYouTubeUrl(url).isValid,
-      {
-        message: "Please enter a valid YouTube URL",
-      },
-    ),
+    .refine((url: string) => validateYouTubeUrl(url).isValid, {
+      message: "Please enter a valid YouTube URL",
+    }),
 });
 
 export type YouTubeUrlFormData = z.infer<typeof youtubeUrlSchema>;
