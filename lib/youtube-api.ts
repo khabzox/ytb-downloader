@@ -175,7 +175,7 @@ function formatFileSize(bytes: number): string {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
 }
 
-function getBestThumbnail(thumbnails: any[]): string {
+function getBestThumbnail(thumbnails: Array<{ url: string }>): string {
   const preferredOrder = ["maxresdefault", "hqdefault", "mqdefault", "default"];
   for (const quality of preferredOrder) {
     const thumbnail = thumbnails.find(t => t.url.includes(quality));
@@ -184,7 +184,7 @@ function getBestThumbnail(thumbnails: any[]): string {
   return thumbnails[0]?.url || "";
 }
 
-function getQualityLabel(format: any): string {
+function getQualityLabel(format: { qualityLabel?: string; height?: number; audioBitrate?: number }): string {
   if (format.qualityLabel) return format.qualityLabel;
   if (format.height) return `${format.height}p`;
   if (format.audioBitrate) return `${format.audioBitrate}kbps`;
@@ -201,12 +201,12 @@ function formatUploadDate(dateString: string): string {
 }
 
 // Enhanced error messages
-function getUserFriendlyError(error: any): {
+function getUserFriendlyError(error: unknown): {
   message: string;
   type: YouTubeApiResponse["errorType"];
   retryAfter?: number;
 } {
-  const errorMessage = error.message?.toLowerCase() || "";
+  const errorMessage = (error as Error)?.message?.toLowerCase() || "";
 
   if (errorMessage.includes("could not extract functions")) {
     return {
@@ -216,7 +216,7 @@ function getUserFriendlyError(error: any): {
     };
   }
 
-  if (errorMessage.includes("rate limit") || error.statusCode === 429) {
+  if (errorMessage.includes("rate limit") || (error as any).statusCode === 429) {
     return {
       message: "Too many requests. Please wait a moment before trying again.",
       type: "RATE_LIMITED",
@@ -224,14 +224,14 @@ function getUserFriendlyError(error: any): {
     };
   }
 
-  if (error.statusCode === 410 || errorMessage.includes("video unavailable")) {
+  if ((error as any).statusCode === 410 || errorMessage.includes("video unavailable")) {
     return {
       message: "This video is no longer available or has been removed.",
       type: "UNAVAILABLE",
     };
   }
 
-  if (error.statusCode === 451 || errorMessage.includes("region")) {
+  if ((error as any).statusCode === 451 || errorMessage.includes("region")) {
     return {
       message: "This video is not available in your region.",
       type: "REGION_BLOCKED",
@@ -239,7 +239,7 @@ function getUserFriendlyError(error: any): {
   }
 
   if (
-    error.statusCode === 403 ||
+    (error as any).statusCode === 403 ||
     errorMessage.includes("private") ||
     errorMessage.includes("restricted")
   ) {
