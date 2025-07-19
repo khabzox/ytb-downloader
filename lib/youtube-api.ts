@@ -855,29 +855,35 @@ export function createAudioStream(url: string, options?: ytdl.downloadOptions) {
   }
 }
 
-export function createVideoStreamWithFallback(url: string, options?: ytdl.downloadOptions) {
+export function createVideoStreamWithFallback(url: string, options?: ytdl.downloadOptions): NodeJS.ReadableStream {
   try {
     return ytdl(url, { quality: "highest", filter: "audioandvideo", ...options });
-  } catch (err: any) {
-    if (err.message?.includes("Could not extract functions")) {
-      return ytdlDistube(url, { quality: "highest" as any, filter: "audioandvideo" as any, ...options });
+  } catch (err) {
+    if (err instanceof Error && err.message?.includes("Could not extract functions")) {
+      // Omit 'format', 'quality', and 'filter' properties to avoid type conflict
+      const { format, quality, filter, ...distubeOptions } = options || {};
+      return ytdlDistube(url, {
+        ...distubeOptions,
+        quality: "highest",
+        filter: "audioandvideo",
+      });
     }
     throw err;
   }
 }
 
 // Future-ready utility functions
-export async function getVideoChapters(videoId: string): Promise<any[]> {
+export async function getVideoChapters(_videoId: string): Promise<unknown[]> {
   // Placeholder for future implementation
   return [];
 }
 
-export async function getVideoSubtitles(videoId: string, language?: string): Promise<any[]> {
+export async function getVideoSubtitles(_videoId: string, _language?: string): Promise<unknown[]> {
   // Placeholder for future implementation
   return [];
 }
 
-export async function getVideoAnalytics(videoId: string): Promise<any> {
+export async function getVideoAnalytics(_videoId: string): Promise<unknown> {
   // Placeholder for future implementation
   return null;
 }
