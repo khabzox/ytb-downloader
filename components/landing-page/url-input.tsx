@@ -2,20 +2,15 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ClipboardPaste, AlertCircle, CheckCircle, Film, Loader2 } from "lucide-react";
+import { ClipboardPaste, AlertCircle, CheckCircle, Film, Loader2, Download } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Download } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  youtubeUrlSchema,
-  YouTubeUrlFormData,
-  validateYouTubeUrl,
-  YouTubeUrlValidation,
-} from "@/lib/validators";
+import { youtubeUrlSchema, YouTubeUrlFormData, YouTubeUrlValidation, validateYouTubeUrl } from "@/lib/validators";
+import { validateUrlFromString } from "@/actions/validate-url";
 
 export default function UrlInput() {
   const [realTimeValidation, setRealTimeValidation] = useState<YouTubeUrlValidation | null>(null);
@@ -70,27 +65,24 @@ export default function UrlInput() {
     setSubmitError(null);
 
     try {
-      // Double-check validation before submitting
-      const validation = validateYouTubeUrl(data.url);
+      // Use real server action for validation
+      const result = await validateUrlFromString(data.url);
 
-      if (!validation.isValid) {
+      if (!result.success || !result.data) {
         setError("url", {
           type: "manual",
-          message: validation.error || "Invalid YouTube URL",
+          message: result.error || "Invalid YouTube URL",
         });
-        setSubmitError(validation.error || "Please enter a valid YouTube URL");
+        setSubmitError(result.error || "Please enter a valid YouTube URL");
         setIsSubmitting(false);
         return;
       }
 
-      // Simulate processing time (remove in production)
-      await new Promise(resolve => setTimeout(resolve, 500));
-
       // Navigate to download page with validated data
       const searchParams = new URLSearchParams({
-        url: encodeURIComponent(validation.normalizedUrl || data.url),
-        videoId: validation.videoId || "",
-        isShort: validation.isShort ? "true" : "false",
+        url: encodeURIComponent(result.data.normalizedUrl || data.url),
+        videoId: result.data.videoId || "",
+        isShort: result.data.isShort ? "true" : "false",
       });
 
       router.push(`/download?${searchParams.toString()}`);
@@ -114,7 +106,9 @@ export default function UrlInput() {
       await trigger("url");
     } catch (err) {
       // Silently handle clipboard access errors
-      console.warn("Clipboard access denied or failed");
+      if (process.env.NODE_ENV === "development") {
+        console.warn("Clipboard access denied or failed", err);
+      }
     }
   };
 
@@ -171,7 +165,6 @@ export default function UrlInput() {
           {/* Success message with video info */}
           {realTimeValidation?.isValid && !hasError && (
             <div className="mb-4 flex items-center gap-2 rounded-md border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-700">
-              {/* <CheckCircle className="h-4 w-4 flex-shrink-0 text-green-500" /> */}
               <Film className="h-4 w-4 text-green-500" />
               <div className="flex flex-col gap-1 text-start">
                 <span>Valid YouTube {realTimeValidation.isShort ? "Short" : "Video"} detected</span>
@@ -246,18 +239,17 @@ export default function UrlInput() {
             </div> */}
 
             {/* Show validation status */}
-            {urlValue && (
-              <div className="text-muted-foreground pt-1 text-xs">
-                Status:{" "}
-                {isValidating
-                  ? "Validating..."
-                  : realTimeValidation?.isValid
-                    ? "✓ Ready to download"
-                    : hasError
-                      ? "✗ Please fix errors above"
-                      : "Enter a YouTube URL"}
-              </div>
-            )}
+            {urlValue && (() => {
+              let statusMsg = "Enter a YouTube URL";
+              if (isValidating) statusMsg = "Validating...";
+              else if (realTimeValidation?.isValid) statusMsg = "✓ Ready to download";
+              else if (hasError) statusMsg = "✗ Please fix errors above";
+              return (
+                <div className="text-muted-foreground pt-1 text-xs">
+                  Status: {statusMsg}
+                </div>
+              );
+            })()}
           </div>
         </CardContent>
       </Card>
