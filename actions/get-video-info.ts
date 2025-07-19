@@ -57,24 +57,42 @@ export async function getVideoInfoAction(url: string): Promise<VideoInfoResponse
           suggestion = "This may be due to temporary YouTube issues. Try again in a few minutes.";
       }
 
+      // Only allow errorType values defined in VideoInfoResponse['errorType']
+      const allowedErrorTypes = [
+        'YTDL_FUNCTIONS',
+        'UNAVAILABLE',
+        'RESTRICTED',
+        'NETWORK',
+        'UNKNOWN'
+      ];
+      const errorType = allowedErrorTypes.includes(result.errorType as any)
+        ? result.errorType
+        : 'UNKNOWN';
       return {
         success: false,
         error: result.error || "Failed to fetch video information",
-        errorType: result.errorType,
+        errorType,
         suggestion
       };
     }
 
     // Check if this was a fallback response (limited info due to YouTube updates)
-    const isLimitedInfo = result.error?.includes("Limited information available");
+    // Some fallback responses may not have result.error, so check for a fallback flag or fallback error message
+    const isLimitedInfo = !!(
+      result.error?.includes("Limited information available") ||
+      (result.data && (result.data as any).isFallback)
+    );
 
     return {
       success: true,
       data: result.data,
-      isLimitedInfo,
-      ...(isLimitedInfo && {
-        suggestion: "Full video details are temporarily unavailable due to YouTube updates. Basic functionality may be limited."
-      })
+      isLimitedInfo: isLimitedInfo || undefined,
+      ...(isLimitedInfo
+        ? {
+            suggestion:
+              "Full video details are temporarily unavailable due to YouTube updates. Basic functionality may be limited."
+          }
+        : {})
     };
 
   } catch (error: any) {

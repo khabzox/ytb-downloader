@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import React from "react";
+import React, { useState } from "react";
 
 // Import your DownloadProgress type
 interface DownloadProgress {
@@ -47,6 +47,19 @@ export default function DownloadOptions({
   onCancelDownload,
   onClearError,
 }: DownloadOptionsProps) {
+  const [localDownloading, setLocalDownloading] = useState(false);
+
+  const handleDownload = async (option: DownloadOption) => {
+    setLocalDownloading(true);
+    if (onDownload) {
+      await onDownload(option);
+    }
+    // Optionally, keep buttons hidden until download finishes
+    // setLocalDownloading(false);
+  };
+
+  const isDownloading = downloading || localDownloading;
+
   const formatSpeed = (speed: number) => {
     if (speed >= 1024 * 1024) {
       return `${(speed / (1024 * 1024)).toFixed(1)} MB/s`;
@@ -78,6 +91,42 @@ export default function DownloadOptions({
     }
     return `${bytes} B`;
   };
+
+  if (isDownloading) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Download className="h-5 w-5" />
+            Download Options
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {error && (
+            <Alert variant="destructive">
+              <AlertDescription className="flex items-center justify-between">
+                <span>{error}</span>
+                {onClearError && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={onClearError}
+                    className="h-auto p-1"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                )}
+              </AlertDescription>
+            </Alert>
+          )}
+          <div className="flex flex-col items-center justify-center py-8">
+            <Loader2 className="h-8 w-8 animate-spin mb-2 text-primary" />
+            <div className="text-primary font-medium">Preparing your download...</div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card>
@@ -173,11 +222,11 @@ export default function DownloadOptions({
 
                   <Button
                     size="sm"
-                    onClick={() => onDownload?.(option)}
-                    disabled={downloading}
+                    onClick={() => handleDownload(option)}
+                    disabled={isDownloading}
                     className="min-w-[100px]"
                   >
-                    {downloading ? (
+                    {isDownloading ? (
                       <>
                         <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                         Downloading...

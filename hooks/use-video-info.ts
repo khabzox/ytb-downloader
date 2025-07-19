@@ -86,10 +86,19 @@ export function useVideoInfo(): UseVideoInfoReturn {
         // Transform the API response to match our VideoInfo interface
         const { videoInfo: rawVideoInfo, downloadOptions: rawDownloadOptions } = result.data;
         
+        // Fallback thumbnail logic: try maxresdefault, then hqdefault
+        let thumbnail = rawVideoInfo.thumbnail;
+        if (!thumbnail && rawVideoInfo.videoId) {
+          thumbnail = `https://img.youtube.com/vi/${rawVideoInfo.videoId}/maxresdefault.jpg`;
+        }
+
+        // If maxresdefault.jpg fails, fallback to hqdefault.jpg (handled in component or by browser)
+        // Optionally, you can check for 404 with a fetch, but that's not SSR-friendly. So provide both as srcSet.
+
         const transformedVideoInfo: VideoInfo = {
           id: rawVideoInfo.videoId || "",
           title: rawVideoInfo.title || "Unknown Title",
-          thumbnail: rawVideoInfo.thumbnail || `https://img.youtube.com/vi/${rawVideoInfo.videoId}/maxresdefault.jpg`,
+          thumbnail: thumbnail || `https://img.youtube.com/vi/${rawVideoInfo.videoId}/hqdefault.jpg`,
           duration: formatDuration(rawVideoInfo.duration),
           views: formatNumber(rawVideoInfo.views),
           likes: formatNumber(rawVideoInfo.likes),
