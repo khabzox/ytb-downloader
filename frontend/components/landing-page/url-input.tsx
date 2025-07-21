@@ -17,7 +17,6 @@ export default function UrlInput() {
     register,
     handleSubmit,
     setValue,
-    watch,
     formState: { errors },
   } = useForm<FormValues>();
 
@@ -29,7 +28,7 @@ export default function UrlInput() {
       const text = await navigator.clipboard.readText();
       setValue("url", text, { shouldValidate: true });
     } catch (err) {
-      // Optionally handle error
+      console.error("Failed to read clipboard contents: ", err);
     }
   };
 

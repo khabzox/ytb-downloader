@@ -135,7 +135,7 @@ export type YouTubeUrlFormData = z.infer<typeof youtubeUrlSchema>;
 /**
  * React Hook Form resolver for YouTube URL validation
  */
-export const youtubeUrlResolver = (data: any) => {
+export const youtubeUrlResolver = (data: YouTubeUrlFormData) => {
   try {
     const parsed = youtubeUrlSchema.parse(data);
     return { values: parsed, errors: {} };
@@ -147,7 +147,7 @@ export const youtubeUrlResolver = (data: any) => {
           const path = issue.path.join(".");
           acc[path] = { message: issue.message };
           return acc;
-        }, {} as any),
+        }, {} as Record<string, { message: string }>),
       };
     }
     return { values: {}, errors: { url: { message: "Invalid URL" } } };
