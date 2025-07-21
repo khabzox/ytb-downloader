@@ -1,113 +1,77 @@
-"use client";
-
-import { useEffect } from "react";
-import { useSearchParams } from "next/navigation";
 import { FileVideo, Music } from "lucide-react";
+
 import VideoPreview from "@/components/download/video-preview";
 import DownloadOptions from "@/components/download/download-options";
 import ChannelInformation from "@/components/download/channel-information";
 import DownloadInfo from "@/components/download/download-info";
+import { Suspense } from "react";
 import VideoPreviewSkeleton from "@/components/loading/video-preview";
 import ChannelInformationSkeleton from "@/components/loading/channel-information";
 import DownloadOptionsSkeleton from "@/components/loading/download-options";
-import { useVideoInfo } from "@/hooks/use-video-info";
-import { useDownload } from "@/hooks/use-download";
 
 export default function DownloadPage() {
-  const searchParams = useSearchParams();
-  const urlParam = searchParams.get("url") || "";
-  const url = urlParam ? decodeURIComponent(urlParam) : "";
-
-  const {
-    videoInfo,
-    downloadOptions: rawDownloadOptions,
-    loading: videoLoading,
-    error: videoError,
-    fetchVideoInfo,
-  } = useVideoInfo();
-
-  const {
-    downloading,
-    progress,
-    error: downloadError,
-    downloadFile,
-    cancelDownload,
-    clearError,
-  } = useDownload();
-
-  // Transform download options to match your component structure
-  const downloadOptions = rawDownloadOptions.map(option => ({
-    type: option.format === "audio" ? "MP3" : "MP4",
-    quality: option.quality,
-    size: option.size,
-    icon: option.format === "audio" ? Music : FileVideo,
-    recommended: option.recommended,
-    itag: option.itag,
-    format: option.format,
-  }));
-
-  // Fetch video info when URL is available
-  useEffect(() => {
-    if (url) {
-      fetchVideoInfo(url);
-    }
-  }, [url]);
-
-  // Handle download option selection
-  const handleDownload = async (option: any) => {
-    if (!url) return;
-
-    clearError();
-
-    await downloadFile({
-      url,
-      itag: option.itag,
-      quality: option.quality,
-      format: option.format,
-    });
+  // Mock video data - in real app this would come from URL params or API
+  const videoData = {
+    id: "dQw4w9WgXcQ",
+    title: "Amazing Tutorial: How to Build Modern Web Applications",
+    thumbnail: "https://img.youtube.com/vi/6sgs1EZLF5E/maxresdefault.jpg",
+    duration: "12:34",
+    views: "1,234,567",
+    likes: "45,678",
+    uploadDate: "2024-01-15",
+    description:
+      "Learn how to build modern web applications with the latest technologies. This comprehensive tutorial covers everything from setup to deployment.",
+    channel: {
+      name: "TechMaster Pro",
+      avatar: "https://yt3.ggpht.com/q0jye-KM3l3nDIs5Be_oXsECi4LjRdSeydIPgw6ByfSYI9Fmbn0Dg5fV-eq9Q0UH5_h_NyF5DA=s48-c-k-c0x00ffffff-no-rj",
+      subscribers: "2.5M",
+      verified: true,
+      bio: "Creating high-quality tech tutorials and programming content. Helping developers level up their skills with practical, real-world examples.",
+      socialLinks: {
+        youtube: "https://youtube.com/@techmasterpro",
+        twitter: "https://twitter.com/techmasterpro",
+        website: "https://techmasterpro.com",
+      },
+    },
   };
 
-  // Show error state
-  if (videoError && !videoLoading) {
-    return (
-      <div className="bg-background text-foreground min-h-screen">
-        <div className="container mx-auto px-4 py-8">
-          <div className="mx-auto max-w-2xl">
-            <div className="bg-destructive/10 border-destructive/20 rounded-lg border p-6 text-center">
-              <h2 className="text-destructive mb-2 text-xl font-semibold">Error Loading Video</h2>
-              <p className="text-muted-foreground mb-4">{videoError}</p>
-              <button
-                onClick={() => window.history.back()}
-                className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-4 py-2 transition-colors"
-              >
-                Go Back
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Show loading state
-  if (videoLoading || !videoInfo) {
-    return (
-      <div className="bg-background text-foreground min-h-screen">
-        <div className="container mx-auto px-4 py-8">
-          <div className="grid gap-8 lg:grid-cols-3">
-            <div className="space-y-6 lg:col-span-2">
-              <VideoPreviewSkeleton />
-              <DownloadOptionsSkeleton />
-            </div>
-            <div className="space-y-6">
-              <ChannelInformationSkeleton />
-              <DownloadOptionsSkeleton />
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const downloadOptions = [
+    {
+      type: "MP4",
+      quality: "1080p",
+      size: "245 MB",
+      icon: FileVideo,
+      recommended: true,
+    },
+    {
+      type: "MP4",
+      quality: "720p",
+      size: "156 MB",
+      icon: FileVideo,
+      recommended: false,
+    },
+    {
+      type: "MP4",
+      quality: "480p",
+      size: "89 MB",
+      icon: FileVideo,
+      recommended: false,
+    },
+    {
+      type: "MP3",
+      quality: "320kbps",
+      size: "12 MB",
+      icon: Music,
+      recommended: false,
+    },
+    {
+      type: "MP3",
+      quality: "128kbps",
+      size: "5 MB",
+      icon: Music,
+      recommended: false,
+    },
+  ];
 
   return (
     <div className="bg-background text-foreground min-h-screen">
@@ -116,27 +80,27 @@ export default function DownloadPage() {
           {/* Main Content */}
           <div className="space-y-6 lg:col-span-2">
             {/* Video Preview */}
-            <VideoPreview videoData={videoInfo} />
+            <Suspense fallback={<VideoPreviewSkeleton />}>
+              <VideoPreview videoData={videoData} />
+            </Suspense>
 
             {/* Download Options */}
-            <DownloadOptions
-              options={downloadOptions}
-              onDownload={handleDownload}
-              downloading={downloading}
-              progress={progress}
-              error={downloadError}
-              onCancelDownload={cancelDownload}
-              onClearError={clearError}
-            />
+            <Suspense fallback={<DownloadOptionsSkeleton />}>
+              <DownloadOptions options={downloadOptions} />
+            </Suspense>
           </div>
 
           {/* Sidebar - Channel Info */}
           <div className="space-y-6">
             {/* Channel Information */}
-            <ChannelInformation videoData={videoInfo} />
+            <Suspense fallback={<ChannelInformationSkeleton />}>
+              <ChannelInformation videoData={videoData} />
+            </Suspense>
 
             {/* Download Info */}
-            <DownloadInfo />
+            <Suspense fallback={<DownloadOptionsSkeleton />}>
+              <DownloadInfo />
+            </Suspense>
           </div>
         </div>
       </div>

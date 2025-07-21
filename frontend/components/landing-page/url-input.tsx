@@ -2,255 +2,92 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ClipboardPaste, AlertCircle, CheckCircle, Film, Loader2, Download } from "lucide-react";
+import { ClipboardPaste } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { Download } from "lucide-react";
+import Link from "next/link";
 
 import { useForm, SubmitHandler } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { youtubeUrlSchema, YouTubeUrlFormData, YouTubeUrlValidation, validateYouTubeUrl } from "@/lib/validators";
-import { validateUrlFromString } from "@/actions/validate-url";
+interface FormValues {
+  url: string;
+}
 
 export default function UrlInput() {
-  const [realTimeValidation, setRealTimeValidation] = useState<YouTubeUrlValidation | null>(null);
-  const [isValidating, setIsValidating] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
-
-  const router = useRouter();
 
   const {
     register,
     handleSubmit,
     setValue,
     watch,
-    formState: { errors, isValid },
-    trigger,
-    setError,
-    clearErrors,
-  } = useForm<YouTubeUrlFormData>({
-    resolver: zodResolver(youtubeUrlSchema),
-    mode: "onChange",
-  });
+    formState: { errors },
+  } = useForm<FormValues>();
 
-  const urlValue = watch("url");
-
-  // Real-time validation as user types
-  useEffect(() => {
-    if (!urlValue || urlValue.trim() === "") {
-      setRealTimeValidation(null);
-      setSubmitError(null);
-      return;
-    }
-
-    setIsValidating(true);
-    const timeoutId = setTimeout(() => {
-      const validation = validateYouTubeUrl(urlValue);
-      setRealTimeValidation(validation);
-      setIsValidating(false);
-
-      // Clear submit errors when validation changes
-      if (validation.isValid) {
-        setSubmitError(null);
-        clearErrors("url");
-      }
-    }, 300); // Debounce validation
-
-    return () => clearTimeout(timeoutId);
-  }, [urlValue, clearErrors]);
-
-  const onSubmit: SubmitHandler<YouTubeUrlFormData> = async data => {
-    setIsSubmitting(true);
-    setSubmitError(null);
-
-    try {
-      // Use real server action for validation
-      const result = await validateUrlFromString(data.url);
-
-      if (!result.success || !result.data) {
-        setError("url", {
-          type: "manual",
-          message: result.error || "Invalid YouTube URL",
-        });
-        setSubmitError(result.error || "Please enter a valid YouTube URL");
-        setIsSubmitting(false);
-        return;
-      }
-
-      // Navigate to download page with validated data
-      const searchParams = new URLSearchParams({
-        url: encodeURIComponent(result.data.normalizedUrl || data.url),
-        videoId: result.data.videoId || "",
-        isShort: result.data.isShort ? "true" : "false",
-      });
-
-      router.push(`/download?${searchParams.toString()}`);
-    } catch (error) {
-      console.error("Download submission error:", error);
-      setSubmitError("An unexpected error occurred. Please try again.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  const onSubmit: SubmitHandler<FormValues> = data => console.log(data);
 
   // Paste from clipboard handler
   const handlePasteClick = async () => {
     try {
       const text = await navigator.clipboard.readText();
-      setValue("url", text, {
-        shouldValidate: true,
-        shouldDirty: true,
-        shouldTouch: true,
-      });
-      await trigger("url");
+      setValue("url", text, { shouldValidate: true });
     } catch (err) {
-      // Silently handle clipboard access errors
-      if (process.env.NODE_ENV === "development") {
-        console.warn("Clipboard access denied or failed", err);
-      }
+      // Optionally handle error
     }
   };
-
-  // Get validation icon and styling
-  const getValidationStatus = () => {
-    if (isValidating) {
-      return {
-        icon: <Loader2 className="h-4 w-4 animate-spin text-blue-500" />,
-        borderColor: "border-blue-300",
-      };
-    }
-
-    if (realTimeValidation?.isValid && !errors.url) {
-      return {
-        icon: <CheckCircle className="h-4 w-4 text-green-500" />,
-        borderColor: "border-green-500",
-      };
-    }
-
-    if ((realTimeValidation && !realTimeValidation.isValid) || errors.url || submitError) {
-      return {
-        icon: <AlertCircle className="h-4 w-4 text-red-500" />,
-        borderColor: "border-red-500",
-      };
-    }
-
-    return {
-      icon: null,
-      borderColor: "border-border",
-    };
-  };
-
-  const validationStatus = getValidationStatus();
-  const hasError = errors.url || (realTimeValidation && !realTimeValidation.isValid) || submitError;
-  const errorMessage = errors.url?.message || realTimeValidation?.error || submitError;
-
-  // Button should be enabled only when URL is valid and not submitting
-  const isDownloadDisabled = Boolean(
-    !realTimeValidation?.isValid || isSubmitting || !isValid || hasError
-  );
 
   return (
     <div className="mx-auto mb-8 max-w-2xl">
       <Card className="bg-card border-primary border p-6 shadow-lg">
         <CardContent className="p-0">
           {/* Error message at the top of the card */}
-          {hasError && (
+          {errors.url && (
             <div className="mb-4 flex items-center gap-2 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-              <AlertCircle className="h-4 w-4 flex-shrink-0 text-red-500" />
-              <span>{errorMessage}</span>
+              <svg
+                className="text-primary h-4 w-4"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.054 0 1.918-.816 1.995-1.85l.007-.15V6c0-1.054-.816-1.918-1.85-1.995L19 4H5c-1.054 0-1.918.816-1.995 1.85L3 6v12c0 1.054.816 1.918 1.85 1.995L5 20zm7-8v2m0 4h.01"
+                />
+              </svg>
+              <span>Please enter a valid YouTube URL. This field is required.</span>
             </div>
           )}
-
-          {/* Success message with video info */}
-          {realTimeValidation?.isValid && !hasError && (
-            <div className="mb-4 flex items-center gap-2 rounded-md border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-700">
-              <Film className="h-4 w-4 text-green-500" />
-              <div className="flex flex-col gap-1 text-start">
-                <span>Valid YouTube {realTimeValidation.isShort ? "Short" : "Video"} detected</span>
-                <span className="text-xs text-green-600">
-                  Video ID: {realTimeValidation.videoId}
-                </span>
-              </div>
-            </div>
-          )}
-
           <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 sm:flex-row">
             <div className="relative flex flex-1">
               <Input
                 type="url"
-                placeholder="Paste YouTube URL here (videos & shorts supported)..."
-                className={`bg-input text-foreground h-12 flex-1 border-2 pr-20 text-base transition-colors ${validationStatus.borderColor}`}
-                {...register("url")}
-                disabled={isSubmitting}
+                placeholder="Paste YouTube URL here..."
+                className="bg-input border-border text-foreground h-12 flex-1 border-2 text-base pr-12"
+                {...register("url", { required: true })}
               />
-
-              {/* Validation status icon */}
-              {validationStatus.icon && (
-                <div className="absolute top-1/2 right-12 -translate-y-1/2">
-                  {validationStatus.icon}
-                </div>
-              )}
-
-              {/* Paste button */}
               <button
                 type="button"
                 onClick={handlePasteClick}
-                disabled={isSubmitting}
-                className="hover:bg-accent absolute top-1/2 right-2 -translate-y-1/2 rounded p-2 transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded hover:bg-accent transition-colors"
                 title="Paste from clipboard"
                 tabIndex={0}
               >
-                <ClipboardPaste className="text-muted-foreground h-4 w-4" />
+                <ClipboardPaste className="h-5 w-5 text-muted-foreground" />
               </button>
             </div>
-
-            <Button
-              type="submit"
-              size="lg"
-              disabled={isDownloadDisabled}
-              className="bg-primary text-primary-foreground h-12 w-full border-0 px-8 font-semibold transition-all disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                  Processing...
-                </>
-              ) : (
-                <>
-                  <Download className="mr-2 h-5 w-5" />
-                  Download
-                </>
-              )}
-            </Button>
+            <Link href="/download" type="submit">
+              <Button
+                size="lg"
+                className="bg-primary text-primary-foreground h-12 w-full border-0 px-8 font-semibold sm:w-auto"
+              >
+                <Download className="mr-2 h-5 w-5" />
+                Download
+              </Button>
+            </Link>
           </form>
-
-          <div className="mt-3 space-y-1">
-            <p className="text-muted-foreground text-sm">
-              Supports YouTube videos, YouTube Shorts, and all quality formats
-            </p>
-
-            {/* Show supported formats */}
-            {/* <div className="text-muted-foreground flex flex-wrap gap-1 text-xs">
-              <span className="bg-muted rounded px-2 py-1">youtube.com/watch</span>
-              <span className="bg-muted rounded px-2 py-1">youtube.com/shorts</span>
-              <span className="bg-muted rounded px-2 py-1">youtu.be</span>
-              <span className="bg-muted rounded px-2 py-1">m.youtube.com</span>
-            </div> */}
-
-            {/* Show validation status */}
-            {urlValue && (() => {
-              let statusMsg = "Enter a YouTube URL";
-              if (isValidating) statusMsg = "Validating...";
-              else if (realTimeValidation?.isValid) statusMsg = "✓ Ready to download";
-              else if (hasError) statusMsg = "✗ Please fix errors above";
-              return (
-                <div className="text-muted-foreground pt-1 text-xs">
-                  Status: {statusMsg}
-                </div>
-              );
-            })()}
-          </div>
+          <p className="text-muted-foreground mt-3 text-sm">
+            Supports all YouTube video formats and qualities
+          </p>
         </CardContent>
       </Card>
     </div>
