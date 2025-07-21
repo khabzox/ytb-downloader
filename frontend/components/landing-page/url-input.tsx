@@ -13,7 +13,6 @@ interface FormValues {
 }
 
 export default function UrlInput() {
-
   const {
     register,
     handleSubmit,
@@ -62,17 +61,17 @@ export default function UrlInput() {
               <Input
                 type="url"
                 placeholder="Paste YouTube URL here..."
-                className="bg-input border-border text-foreground h-12 flex-1 border-2 text-base pr-12"
+                className="bg-input border-border text-foreground h-12 flex-1 border-2 pr-12 text-base"
                 {...register("url", { required: true })}
               />
               <button
                 type="button"
                 onClick={handlePasteClick}
-                className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded hover:bg-accent transition-colors"
+                className="hover:bg-accent absolute top-1/2 right-2 -translate-y-1/2 rounded p-2 transition-colors"
                 title="Paste from clipboard"
                 tabIndex={0}
               >
-                <ClipboardPaste className="h-5 w-5 text-muted-foreground" />
+                <ClipboardPaste className="text-muted-foreground h-5 w-5" />
               </button>
             </div>
             <Link href="/download" type="submit">

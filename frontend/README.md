@@ -325,8 +325,8 @@ _Connect with me:_
 
 - 💼 [LinkedIn](https://linkedin.com/in/khabzox)
 - 🐱 [GitHub](https://github.com/khabzox)
-<!-- - 🌐 [Portfolio](https://your-website.com) -->
-<!-- - 📧 [Email](mailto:your-email@domain.com) -->
+  <!-- - 🌐 [Portfolio](https://your-website.com) -->
+  <!-- - 📧 [Email](mailto:your-email@domain.com) -->
 
 ## 🤝 Contributing
 

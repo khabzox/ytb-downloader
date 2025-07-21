@@ -23,7 +23,8 @@ export default function DownloadPage() {
       "Learn how to build modern web applications with the latest technologies. This comprehensive tutorial covers everything from setup to deployment.",
     channel: {
       name: "TechMaster Pro",
-      avatar: "https://yt3.ggpht.com/q0jye-KM3l3nDIs5Be_oXsECi4LjRdSeydIPgw6ByfSYI9Fmbn0Dg5fV-eq9Q0UH5_h_NyF5DA=s48-c-k-c0x00ffffff-no-rj",
+      avatar:
+        "https://yt3.ggpht.com/q0jye-KM3l3nDIs5Be_oXsECi4LjRdSeydIPgw6ByfSYI9Fmbn0Dg5fV-eq9Q0UH5_h_NyF5DA=s48-c-k-c0x00ffffff-no-rj",
       subscribers: "2.5M",
       verified: true,
       bio: "Creating high-quality tech tutorials and programming content. Helping developers level up their skills with practical, real-world examples.",

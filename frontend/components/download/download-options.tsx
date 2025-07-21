@@ -26,10 +26,10 @@ export default function DownloadOptions({ options }: { options: DownloadOption[]
         {options.map((option, index) => (
           <div key={index}>
             <div
-              className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 rounded-lg border p-4 sm:gap-0"
+              className="flex flex-col gap-4 rounded-lg border p-4 sm:flex-row sm:items-center sm:justify-between sm:gap-0"
               style={{ borderColor: "var(--border)" }}
             >
-              <div className="flex items-center gap-3 w-full sm:w-auto">
+              <div className="flex w-full items-center gap-3 sm:w-auto">
                 <div className="bg-accent rounded-lg p-2">
                   <option.icon className="text-primary h-5 w-5" />
                 </div>
@@ -45,7 +45,7 @@ export default function DownloadOptions({ options }: { options: DownloadOption[]
                   <p className="text-muted-foreground text-sm">File size: {option.size}</p>
                 </div>
               </div>
-              <Button className="bg-primary text-primary-foreground cursor-pointer border-none w-full sm:w-auto mt-2 sm:mt-0">
+              <Button className="bg-primary text-primary-foreground mt-2 w-full cursor-pointer border-none sm:mt-0 sm:w-auto">
                 <Download className="mr-2 h-4 w-4" />
                 Download
               </Button>
